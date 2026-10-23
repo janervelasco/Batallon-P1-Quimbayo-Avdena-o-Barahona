@@ -78,50 +78,135 @@ class BatallonTest {
         assertEquals(1, batallon.getListaVehiculos().size());
     }
 }
-// 4. Buscar vehículos existentes e inexistentes
-@Test
-public void testBuscarVehiculosExistentesEInexistentes() {
-    Apoyo apoyo = new Apoyo("A-01", "Ambulancia", 2022,
-            5000, EstadoOperativo.DISPONIBLE, TipoFuncion.MEDICO);
-    batallon.registrarVehiculo(apoyo);
+    // 4. Buscar vehículos existentes e inexistentes
+    @Test
+    public void testBuscarVehiculosExistentesEInexistentes() {
+        Apoyo apoyo = new Apoyo("A-01", "Ambulancia", 2022,
+                5000, EstadoOperativo.DISPONIBLE, TipoFuncion.MEDICO);
+        batallon.registrarVehiculo(apoyo);
 
-    // Nota: Verifica que el método en tu clase Batallon se llame buscarVehiculo
-    Vehiculo encontrado = batallon.buscarVehiculo("A-01");
-    Vehiculo inexistente = batallon.buscarVehiculo("ID-999");
+        // Nota: Verifica que el método en tu clase Batallon se llame buscarVehiculo
+        Vehiculo encontrado = batallon.buscarVehiculo("A-01");
+        Vehiculo inexistente = batallon.buscarVehiculo("ID-999");
 
-    assertNotNull(encontrado);
-    assertEquals("A-01", encontrado.getId());
-    assertNull(inexistente);
-}
+        assertNotNull(encontrado);
+        assertEquals("A-01", encontrado.getId());
+        assertNull(inexistente);
+    }
 
-// 5. Eliminar un vehículo registrado
-@Test
-public void testEliminarVehiculoRegistrado() {
-    Blindado blindado = new Blindado("B-01", "Vehículo blindado", 2021,
-            8000, EstadoOperativo.DISPONIBLE, 4);
-    batallon.registrarVehiculo(blindado);
+    // 5. Eliminar un vehículo registrado
+    @Test
+    public void testEliminarVehiculoRegistrado() {
+        Blindado blindado = new Blindado("B-01", "Vehículo blindado", 2021,
+                8000, EstadoOperativo.DISPONIBLE, 4);
+        batallon.registrarVehiculo(blindado);
 
-    // Nota: Verifica que el método en tu clase Batallon se llame eliminarVehiculo
-    boolean eliminado = batallon.eliminarVehiculo("B-01");
+        // Nota: Verifica que el método en tu clase Batallon se llame eliminarVehiculo
+        boolean eliminado = batallon.eliminarVehiculo("B-01");
 
-    assertTrue(eliminado);
-    assertNull(batallon.buscarVehiculo("B-01"));
-    assertEquals(0, batallon.getListaVehiculos().size());
-}
+        assertTrue(eliminado);
+        assertNull(batallon.buscarVehiculo("B-01"));
+        assertEquals(0, batallon.getListaVehiculos().size());
+    }
 
-// 6. Actualizar correctamente la información de un vehículo
-@Test
-public void testActualizarInformacionVehiculo() {
-    TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
-            12000, EstadoOperativo.DISPONIBLE, 25);
-    batallon.registrarVehiculo(transporte);
+    // 6. Actualizar correctamente la información de un vehículo
+    @Test
+    public void testActualizarInformacionVehiculo() {
+        TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
+                12000, EstadoOperativo.DISPONIBLE, 25);
+        batallon.registrarVehiculo(transporte);
 
-    Vehiculo vehiculoRegistrado = batallon.buscarVehiculo("T-01");
-    boolean kmActualizado = vehiculoRegistrado.setKilometraje(15500);
-    boolean estadoActualizado = vehiculoRegistrado.setEstadoOperativo(EstadoOperativo.EN_MANTENIMIENTO);
+        Vehiculo vehiculoRegistrado = batallon.buscarVehiculo("T-01");
+        boolean kmActualizado = vehiculoRegistrado.setKilometraje(15500);
+        boolean estadoActualizado = vehiculoRegistrado.setEstadoOperativo(EstadoOperativo.EN_MANTENIMIENTO);
 
-    assertTrue(kmActualizado);
-    assertTrue(estadoActualizado);
-    assertEquals(15500.0, batallon.buscarVehiculo("T-01").getKilometraje());
-    assertEquals(EstadoOperativo.EN_MANTENIMIENTO, batallon.buscarVehiculo("T-01").getEstadoOperativo());
+        assertTrue(kmActualizado);
+        assertTrue(estadoActualizado);
+        assertEquals(15500.0, batallon.buscarVehiculo("T-01").getKilometraje());
+        assertEquals(EstadoOperativo.EN_MANTENIMIENTO, batallon.buscarVehiculo("T-01").getEstadoOperativo());
+    }
+    // 7. Registrar una misión con personal y vehículos asignados
+    @Test
+    public void testRegistrarMisionConPersonalYVehiculos() {
+        TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
+                12000, EstadoOperativo.DISPONIBLE, 25);
+        Apoyo apoyo = new Apoyo("A-01", "Ambulancia", 2022,
+                5000, EstadoOperativo.DISPONIBLE, TipoFuncion.MEDICO);
+        batallon.registrarVehiculo(transporte);
+        batallon.registrarVehiculo(apoyo);
+
+        Mision mision = new Mision("M-01", LocalDate.of(2026, 10, 22), "Calarcá");
+        mision.agregarPersonal("Ana Pérez");
+        mision.agregarPersonal("Luis Gómez");
+
+        boolean misionRegistrada = batallon.registrarMision(mision);
+        boolean v1Asignado = batallon.asignarVehiculoMision("M-01", "T-01");
+        boolean v2Asignado = batallon.asignarVehiculoMision("M-01", "A-01");
+
+        assertTrue(misionRegistrada);
+        assertTrue(v1Asignado);
+        assertTrue(v2Asignado);
+        assertEquals(2, mision.getPersonalAsignado().size());
+        assertTrue(mision.getPersonalAsignado().contains("Ana Pérez"));
+        assertEquals(2, mision.getListaDetallesMision().size());
+    }
+
+    // 8. Contar únicamente las misiones completadas de un vehículo
+    @Test
+    public void testContarUnicamenteMisionesCompletadas() {
+        TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
+                12000, EstadoOperativo.DISPONIBLE, 25);
+        batallon.registrarVehiculo(transporte);
+
+        // Misión 1: COMPLETADA
+        Mision m1 = new Mision("M-01", LocalDate.of(2026, 10, 22), "Zona 1");
+        m1.agregarPersonal("Ana Pérez");
+        batallon.registrarMision(m1);
+        batallon.asignarVehiculoMision("M-01", "T-01");
+        batallon.iniciarMision("M-01");
+        batallon.registrarKilometrajeMision("M-01", "T-01", 50);
+        batallon.completarMision("M-01");
+
+        // Misión 2: PLANIFICADA (No iniciada ni completada)
+        Mision m2 = new Mision("M-02", LocalDate.of(2026, 10, 22), "Zona 2");
+        m2.agregarPersonal("Ana Pérez");
+        batallon.registrarMision(m2);
+        batallon.asignarVehiculoMision("M-02", "T-01");
+
+        // Misión 3: EN_CURSO (Iniciada pero no completada)
+        Mision m3 = new Mision("M-03", LocalDate.of(2026, 10, 22), "Zona 3");
+        m3.agregarPersonal("Ana Pérez");
+        batallon.registrarMision(m3);
+        batallon.asignarVehiculoMision("M-03", "T-01");
+        batallon.iniciarMision("M-03");
+
+        // El vehículo participa en 3 misiones, pero solo 1 está COMPLETADA
+        assertEquals(3, transporte.getListaDetallesMision().size());
+        assertEquals(1, transporte.contarMisionesCompletadas());
+    }
+
+    // 9. Verificar que un vehículo con exactamente 50 misiones completadas no aparezca en el listado
+    @Test
+    public void testVehiculoConExactamente50MisionesNoApareceEnListado() {
+        TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
+                12000, EstadoOperativo.DISPONIBLE, 25);
+        batallon.registrarVehiculo(transporte);
+
+        for (int i = 1; i <= 50; i++) {
+            String idMision = "M-" + i;
+            Mision mision = new Mision(idMision, LocalDate.of(2026, 10, 22), "Zona de apoyo");
+            mision.agregarPersonal("Ana Pérez");
+            batallon.registrarMision(mision);
+            batallon.asignarVehiculoMision(idMision, "T-01");
+            batallon.iniciarMision(idMision);
+            batallon.registrarKilometrajeMision(idMision, "T-01", 10);
+            batallon.completarMision(idMision);
+        }
+
+        ArrayList<Vehiculo> vehiculosMasDe50 = batallon.obtenerVehiculosConMasDe50Misiones();
+
+        assertEquals(50, transporte.contarMisionesCompletadas());
+        assertFalse(vehiculosMasDe50.contains(transporte));
+        assertEquals(0, vehiculosMasDe50.size());
+    }
 }
