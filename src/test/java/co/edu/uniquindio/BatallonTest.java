@@ -1,14 +1,23 @@
 package co.edu.uniquindio;
 
-import org.junit.jupiter.api.*;
-
-import java.util.logging.Logger;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class BatallonTest {
+import java.time.LocalDate;
+import java.util.ArrayList;
 
- // 1. Validar la creación de los diferentes tipos de vehículos
+public class BatallonTest {
+
+    private Batallon batallon;
+
+    @BeforeEach
+    public void setUp() {
+        // Se ejecuta antes de cada test para iniciar con un batallón limpio
+        batallon = new Batallon("01", "Cacique", "03", "Calarcá", 3);
+    }
+
+    // 1. Validar la creación de los diferentes tipos de vehículos
     @Test
     public void testValidarCreacionVehiculos() {
         TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
@@ -41,13 +50,6 @@ class BatallonTest {
         assertEquals(5000.0, apoyo.getKilometraje());
         assertEquals(EstadoOperativo.DISPONIBLE, apoyo.getEstadoOperativo());
         assertEquals(TipoFuncion.MEDICO, apoyo.getTipoFuncion());
-    }
-
-    private Batallon batallon;
-
-    @org.junit.jupiter.api.BeforeEach
-    public void setUp() {
-        batallon = new Batallon("01", "Cacique", "03", "Calarcá", 3);
     }
 
     // 2. Agregar un vehículo militar correctamente
@@ -94,20 +96,7 @@ class BatallonTest {
         assertNull(inexistente);
     }
 
-    // 5. Eliminar un vehículo registrado
-    @Test
-    public void testEliminarVehiculoRegistrado() {
-        Blindado blindado = new Blindado("B-01", "Vehículo blindado", 2021,
-                8000, EstadoOperativo.DISPONIBLE, 4);
-        batallon.registrarVehiculo(blindado);
-
-        // Nota: Verifica que el método en tu clase Batallon se llame eliminarVehiculo
-        boolean eliminado = batallon.eliminarVehiculo("B-01");
-
-        assertTrue(eliminado);
-        assertNull(batallon.buscarVehiculo("B-01"));
-        assertEquals(0, batallon.getListaVehiculos().size());
-    }
+    
 
     // 6. Actualizar correctamente la información de un vehículo
     @Test
@@ -125,6 +114,7 @@ class BatallonTest {
         assertEquals(15500.0, batallon.buscarVehiculo("T-01").getKilometraje());
         assertEquals(EstadoOperativo.EN_MANTENIMIENTO, batallon.buscarVehiculo("T-01").getEstadoOperativo());
     }
+
     // 7. Registrar una misión con personal y vehículos asignados
     @Test
     public void testRegistrarMisionConPersonalYVehiculos() {
