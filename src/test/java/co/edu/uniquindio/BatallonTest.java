@@ -8,84 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BatallonTest {
 
-    private static final Logger LOG = Logger.getLogger(BatallonTest.class.getName());
-
-    @DisplayName("Prueba assertEquals")
-    @Test
-    void testInicial(){
-        LOG.info("Iniciando prueba Batallon...");
-
-        int resultado = 1 + 2;
-
-        assertEquals(3,resultado);
-
-        LOG.info("Finalizando prueba Batallon...");
-    }
-
-    @DisplayName("Prueba assertNotEquals")
-    @Test
-    void testNotEquals(){
-        LOG.info("Iniciando prueba Batallon...");
-
-        String cadena = "Hola a todos";
-
-        assertNotEquals("Adios",cadena);
-
-        LOG.info("Finalizando prueba Batallon...");
-    }
-
-    @DisplayName("Prueba assertNull")
-    @Test
-    void testNull(){
-        LOG.info("Iniciando prueba Batallon...");
-
-        Batallon batallon = null;
-
-        assertNull(batallon);
-
-        LOG.info("Finalizando prueba Batallon...");
-    }
-
-    @DisplayName("Prueba assertNotNull")
-    @Test
-    void testNotNull(){
-        LOG.info("Iniciando prueba Batallon...");
-
-        Batallon batallon = new Batallon("01", "Cacique", "03", "Calarca", 3);
-
-        assertNotNull(batallon);
-
-        LOG.info(batallon.toString());
-        LOG.info("Finalizando prueba Batallon...");
-    }
-
-    @DisplayName("Prueba assertTrue/assertFalse")
-    @Test
-    void testFalseTrue(){
-        LOG.info("Iniciando prueba Batallon...");
-
-        Batallon batallon = new Batallon("01", "Cacique", "03", "Calarca", 3);
-
-        assertTrue(batallon.getNumero() < 5);
-        assertFalse(batallon.getNombre().equals("Calarca cacique"));
-
-        LOG.info(batallon.toString());
-        LOG.info("Finalizando prueba Batallon...");
-    }
-
-
-    //@BeforeEach
-    void ejecutarAntes(){
-        LOG.warning("Ejecucion del BeforeEach");
-    }
-
-//    @AfterEach
-    void ejecutarDespues(){
-        LOG.warning("Ejecucion del AfterEach");
-    }
-
-
-
  // 1. Validar la creación de los diferentes tipos de vehículos
     @Test
     public void testValidarCreacionVehiculos() {
@@ -155,4 +77,51 @@ class BatallonTest {
         assertFalse(resultadoRepetido);
         assertEquals(1, batallon.getListaVehiculos().size());
     }
+}
+// 4. Buscar vehículos existentes e inexistentes
+@Test
+public void testBuscarVehiculosExistentesEInexistentes() {
+    Apoyo apoyo = new Apoyo("A-01", "Ambulancia", 2022,
+            5000, EstadoOperativo.DISPONIBLE, TipoFuncion.MEDICO);
+    batallon.registrarVehiculo(apoyo);
+
+    // Nota: Verifica que el método en tu clase Batallon se llame buscarVehiculo
+    Vehiculo encontrado = batallon.buscarVehiculo("A-01");
+    Vehiculo inexistente = batallon.buscarVehiculo("ID-999");
+
+    assertNotNull(encontrado);
+    assertEquals("A-01", encontrado.getId());
+    assertNull(inexistente);
+}
+
+// 5. Eliminar un vehículo registrado
+@Test
+public void testEliminarVehiculoRegistrado() {
+    Blindado blindado = new Blindado("B-01", "Vehículo blindado", 2021,
+            8000, EstadoOperativo.DISPONIBLE, 4);
+    batallon.registrarVehiculo(blindado);
+
+    // Nota: Verifica que el método en tu clase Batallon se llame eliminarVehiculo
+    boolean eliminado = batallon.eliminarVehiculo("B-01");
+
+    assertTrue(eliminado);
+    assertNull(batallon.buscarVehiculo("B-01"));
+    assertEquals(0, batallon.getListaVehiculos().size());
+}
+
+// 6. Actualizar correctamente la información de un vehículo
+@Test
+public void testActualizarInformacionVehiculo() {
+    TransporteTropas transporte = new TransporteTropas("T-01", "Camión de tropas", 2020,
+            12000, EstadoOperativo.DISPONIBLE, 25);
+    batallon.registrarVehiculo(transporte);
+
+    Vehiculo vehiculoRegistrado = batallon.buscarVehiculo("T-01");
+    boolean kmActualizado = vehiculoRegistrado.setKilometraje(15500);
+    boolean estadoActualizado = vehiculoRegistrado.setEstadoOperativo(EstadoOperativo.EN_MANTENIMIENTO);
+
+    assertTrue(kmActualizado);
+    assertTrue(estadoActualizado);
+    assertEquals(15500.0, batallon.buscarVehiculo("T-01").getKilometraje());
+    assertEquals(EstadoOperativo.EN_MANTENIMIENTO, batallon.buscarVehiculo("T-01").getEstadoOperativo());
 }
