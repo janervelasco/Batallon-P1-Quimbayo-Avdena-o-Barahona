@@ -77,7 +77,7 @@ class BatallonTest {
         assertFalse(resultadoRepetido);
         assertEquals(1, batallon.getListaVehiculos().size());
     }
-}
+
     // 4. Buscar vehículos existentes e inexistentes
     @Test
     public void testBuscarVehiculosExistentesEInexistentes() {
